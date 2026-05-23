@@ -1,0 +1,3 @@
+[submodule "backend"]
+	path = backend
+	url = https://github.com/felipe-sant/IPTU-Piraporatuba-do-Sul-back.git
