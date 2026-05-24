@@ -1,0 +1,44 @@
+services:
+  database:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: iptu-db
+    expose:
+      - "5432"
+    volumes:
+      - db_data:/var/lib/postgresql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - iptu_network
+  
+  backend:
+    build: 
+      context: ./backend
+      target: dev
+    ports:
+      - "6701:3001"
+    depends_on:
+      - database
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: sh -c "npm install && npm run dev"
+    environment:
+      - PORT=3001
+      - NODE_ENV=development
+      - PG_USERNAME=root
+      - PG_PASSWORD=root
+      - PG_HOST=database
+      - PG_PORT=5432
+      - PG_DB=iptu-db
+    networks:
+      - iptu_network
+
+volumes:
+  db_data:
+
+networks:
+  iptu_network:
+    driver: bridge
